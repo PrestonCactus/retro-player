@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Retro Player</title>
+  <style>
+    body{margin:0;background:#101216;color:white;font-family:Arial;text-align:center}
+    header{padding:16px;background:#1d222b}
+    input{margin:15px;padding:10px}
+    #game{width:100vw;height:80vh;display:none}
+    #status{color:#aaa}
+  </style>
+</head>
+<body>
+  <header>
+    <h2>Retro Player</h2>
+    <input id="rom" type="file" accept=".gb,.gbc,.gba,.nes,.smc,.sfc">
+    <p id="status">Choose a legally owned ROM</p>
+  </header>
+
+  <div id="game"></div>
+
+  <script>
+    const input = document.getElementById("rom");
+    const status = document.getElementById("status");
+
+    input.onchange = function () {
+      const file = this.files[0];
+      if (!file) return;
+
+      const ext = file.name.toLowerCase().split(".").pop();
+      const cores = {
+        gb: "gb",
+        gbc: "gb",
+        gba: "gba",
+        nes: "nes",
+        smc: "snes",
+        sfc: "snes"
+      };
+
+      if (!cores[ext]) {
+        status.textContent = "Unsupported file type.";
+        return;
+      }
+
+      window.EJS_player = "#game";
+      window.EJS_core = cores[ext];
+      window.EJS_gameUrl = URL.createObjectURL(file);
+      window.EJS_gameName = file.name;
+      window.EJS_pathtodata =
+        "https://cdn.emulatorjs.org/stable/data/";
+
+      document.getElementById("game").style.display = "block";
+      status.textContent = "Loading " + file.name;
+
+      const script = document.createElement("script");
+      script.src =
+        "https://cdn.emulatorjs.org/stable/data/loader.js";
+      document.body.appendChild(script);
+    };
+  </script>
+</body>
+</html>
